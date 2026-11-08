@@ -8,12 +8,17 @@ permissions: { contents: read }
 jobs:
   draw:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 22 }
       - run: node sig-job.mjs
+        env:
+          SITE: ${{ vars.SITE }}
+          SIG_JOB_SECRET: ${{ secrets.SIG_JOB_SECRET }}
+      - run: npm install --no-audit --no-fund && npx playwright install --with-deps chromium
+      - run: node sig-job.mjs post
         env:
           SITE: ${{ vars.SITE }}
           SIG_JOB_SECRET: ${{ secrets.SIG_JOB_SECRET }}
